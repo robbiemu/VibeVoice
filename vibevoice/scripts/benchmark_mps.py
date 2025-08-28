@@ -148,59 +148,66 @@ def main():
     else:
         print("Note: CPU timings do not require synchronization.")
 
-    # Load model and processor
-    print("\nLoading model...")
-    model, processor = load_vibevoice_model(
+    # Define test inputs
+    test_inputs = [
+        "Speaker 1: Short test sentence.",
+        "Speaker 1: This is a medium length sentence for testing performance.",
+        "Speaker 1: This is a much longer sentence that will test the model's ability to handle extended input sequences. " \
+        * 3,
+        "Speaker 1: A conversation between two people discussing the future of artificial intelligence.\nSpeaker 2: Yes, it's fascinating how quickly the field is evolving.\nSpeaker 1: Indeed, we're seeing breakthroughs almost daily.",
+    ]
+    print(f"\nTest inputs: {len(test_inputs)} prompts of varying lengths")
+
+    # --- Eager Mode Benchmark ---
+    print("\n--- Benchmarking Eager Mode ---")
+    model_eager, processor = load_vibevoice_model(
         "microsoft/VibeVoice-1.5B",
         device=device,
         torch_dtype=dtype,
         attn_implementation=attn_impl,
+        use_compile=False,
     )
-    print("Model loaded successfully.")
+    print("Eager model loaded. Performing warmup run...")
+    warmup_result_eager = benchmark_inference(model_eager, processor, [test_inputs[0]], device)
+    print(f"Warmup completed in {warmup_result_eager['avg_time']:.3f}s")
 
-    # Define test inputs of varying lengths in the expected format
-    test_inputs = [
-        "Speaker 1: Short test sentence.",
-        "Speaker 1: This is a medium length sentence for testing performance.",
-        "Speaker 1: This is a much longer sentence that will test the model's ability to handle extended input sequences. "
-        * 3,
-        "Speaker 1: A conversation between two people discussing the future of artificial intelligence.\nSpeaker 2: Yes, it's fascinating how quickly the field is evolving.\nSpeaker 1: Indeed, we're seeing breakthroughs almost daily.",
-    ]
+    print("\nStarting eager benchmark...")
+    results_eager = benchmark_inference(model_eager, processor, test_inputs, device)
+    print("\n--- Eager Mode Results ---")
+    print(f"Average inference time: {results_eager['avg_time']:.3f}s")
+    print(f"Min inference time: {results_eager['min_time']:.3f}s")
+    print(f"Max inference time: {results_eager['max_time']:.3f}s")
+    if results_eager["memory_usage"]:
+        print(f"  Memory RSS: {results_eager['memory_usage']['rss_mb']:.1f} MB")
 
-    print(f"\nTest inputs: {len(test_inputs)} prompts of varying lengths")
+    # --- Compiled Mode Benchmark ---
+    # Only run if the device is not CPU, as compile is not supported
+    if device != "cpu":
+        print("\n--- Benchmarking Compiled Mode ---")
+        model_compiled, processor = load_vibevoice_model(
+            "microsoft/VibeVoice-1.5B",
+            device=device,
+            torch_dtype=dtype,
+            attn_implementation=attn_impl,
+            use_compile=True,
+        )
+        print("Compiled model loaded. Performing warmup run...")
+        warmup_result_compiled = benchmark_inference(model_compiled, processor, [test_inputs[0]], device)
+        print(f"Warmup completed in {warmup_result_compiled['avg_time']:.3f}s")
 
-    # Warmup run
-    print("\nPerforming warmup run...")
-    warmup_result = benchmark_inference(model, processor, [test_inputs[0]], device)
-    print(f"Warmup completed in {warmup_result['avg_time']:.3f}s")
-
-    # Measured run
-    print("\nStarting benchmark...")
-    results = benchmark_inference(model, processor, test_inputs, device)
-
-    # Print results
-    print("\n=== Benchmark Results ===")
-    print(f"Average inference time: {results['avg_time']:.3f}s")
-    print(f"Min inference time: {results['min_time']:.3f}s")
-    print(f"Max inference time: {results['max_time']:.3f}s")
-    print(f"Total time for all inputs: {sum(results['times']):.3f}s")
-
-    if results["memory_usage"]:
-        print("\nMemory usage:")
-        print(f"  RSS: {results['memory_usage']['rss_mb']:.1f} MB")
-        print(f"  VMS: {results['memory_usage']['vms_mb']:.1f} MB")
-
-    if results["memory_diff"]:
-        print("\nMemory change during benchmark:")
-        print(f"  RSS change: {results['memory_diff']['rss_diff_mb']:+.1f} MB")
-        print(f"  VMS change: {results['memory_diff']['vms_diff_mb']:+.1f} MB")
+        print("\nStarting compiled benchmark...")
+        results_compiled = benchmark_inference(model_compiled, processor, test_inputs, device)
+        print("\n--- Compiled Mode Results ---")
+        print(f"Average inference time: {results_compiled['avg_time']:.3f}s")
+        print(f"Min inference time: {results_compiled['min_time']:.3f}s")
+        print(f"Max inference time: {results_compiled['max_time']:.3f}s")
+        if results_compiled["memory_usage"]:
+            print(f"  Memory RSS: {results_compiled['memory_usage']['rss_mb']:.1f} MB")
 
     print(
         "\nNote: For MPS, it's recommended to take the median of several full benchmark runs for stable results."
     )
-    print(
-        "MPS memory is unified with system memory, unlike dedicated VRAM on CUDA devices."
-    )
+
 
 
 if __name__ == "__main__":
