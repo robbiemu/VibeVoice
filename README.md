@@ -231,8 +231,8 @@ python demo/inference.py \
 # Direct text input instead of file
 python demo/inference.py \
   --model_path WestZhang/VibeVoice-Large-pt \
-  --txt "Speaker 1: Hello, how are you today? Speaker 2: I'm doing great, thanks for asking!" \
-  --speaker_names Alice Yunfan
+  --txt $'Speaker 1: Hello, how are you?\nSpeaker 2: Hello, what a pleasant surprise!' \
+  --speaker_names Alice Samuel
 
 # Launch Gradio demo
 python demo/gradio_demo.py \
