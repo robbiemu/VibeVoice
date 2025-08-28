@@ -23,14 +23,10 @@ dependencies = [
     "diffusers",
     "tqdm",
     "numpy",
-    "scipy",
     "librosa",
-    "ml-collections",
-    "absl-py",
     "gradio",
     "av",
     "aiortc",
-    "librosa"
 ]
 
 [project.optional-dependencies]
