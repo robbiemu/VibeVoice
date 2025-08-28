@@ -1,6 +1,6 @@
 """ VibeVoice_AcousticTokenizer model configuration"""
 
-from typing import Dict, List, Optional, Tuple
+from typing import List, Optional
 
 from transformers.configuration_utils import PretrainedConfig 
 from transformers.utils import logging

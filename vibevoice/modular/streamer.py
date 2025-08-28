@@ -4,7 +4,7 @@ import torch
 
 import asyncio
 from queue import Queue
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 
 from transformers.generation import BaseStreamer

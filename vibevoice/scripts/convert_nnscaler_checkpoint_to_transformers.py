@@ -5,9 +5,7 @@ import argparse
 import json
 import os
 from pathlib import Path
-import re
 import torch
-from typing import Dict, List, Tuple
 
 from vibevoice.modular.configuration_vibevoice import (
     VibeVoiceConfig
@@ -127,7 +125,7 @@ def convert_vibevoice_nnscaler_checkpoint_to_hf(
     
     # Verify the saved model can be loaded
     logger.info("Verifying saved model...")
-    loaded_model = VibeVoiceForConditionalGeneration.from_pretrained(pytorch_dump_folder_path)
+    VibeVoiceForConditionalGeneration.from_pretrained(pytorch_dump_folder_path)
     logger.info("Model successfully loaded from saved checkpoint!")
 
 def main():

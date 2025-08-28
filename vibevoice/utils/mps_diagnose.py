@@ -8,8 +8,6 @@ MPS backend availability, bfloat16 support, and SDPA functionality on Apple Sili
 """
 
 import torch
-import sys
-from typing import Tuple
 
 
 def diagnose_mps_setup() -> None:
@@ -54,7 +52,7 @@ def diagnose_mps_setup() -> None:
     try:
         x = torch.randn(100, 100, device="mps")
         y = torch.randn(100, 100, device="mps")
-        z = torch.matmul(x, y)
+        torch.matmul(x, y)
         print("✅ Basic MPS operations work (matrix multiplication successful)")
     except Exception as e:
         print(f"❌ Basic MPS operations failed: {e}")
@@ -66,7 +64,7 @@ def diagnose_mps_setup() -> None:
     print("\nTesting bfloat16 tensor support...")
     try:
         # Try to create a bfloat16 tensor on MPS
-        bf16_tensor = torch.randn(10, 10, device="mps", dtype=torch.bfloat16)
+        torch.randn(10, 10, device="mps", dtype=torch.bfloat16)
         print("✅ BFloat16 tensors supported on MPS")
         bf16_supported = True
     except Exception as e:
@@ -78,7 +76,7 @@ def diagnose_mps_setup() -> None:
     print("\nTesting float16 tensor support...")
     try:
         # Try to create a float16 tensor on MPS
-        fp16_tensor = torch.randn(10, 10, device="mps", dtype=torch.float16)
+        torch.randn(10, 10, device="mps", dtype=torch.float16)
         print("✅ Float16 tensors supported on MPS")
         fp16_supported = True
     except Exception as e:
@@ -108,7 +106,7 @@ def diagnose_mps_setup() -> None:
             v = torch.randn(1, 4, 16, 32, device="mps", dtype=dtype)
             
             # Test if scaled_dot_product_attention works
-            output = torch.nn.functional.scaled_dot_product_attention(q, k, v)
+            torch.nn.functional.scaled_dot_product_attention(q, k, v)
             
             print(f"✅ SDPA works with {dtype_name}")
             sdpa_works = True

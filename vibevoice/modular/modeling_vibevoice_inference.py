@@ -1,27 +1,23 @@
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple, Union, Callable
+from typing import List, Optional, Tuple, Union, Callable
 from tqdm import tqdm
 import torch
 import torch.nn as nn
 
-from transformers.models.auto import AutoModel, AutoModelForCausalLM
+from transformers.models.auto import AutoModelForCausalLM
 
 from transformers.generation import GenerationMixin, GenerationConfig, LogitsProcessor, LogitsProcessorList, StoppingCriteriaList
 from transformers.modeling_outputs import BaseModelOutputWithPast, ModelOutput
 from transformers import modeling_utils
 from transformers.modeling_utils import PreTrainedModel
-from transformers.modeling_flash_attention_utils import FlashAttentionKwargs
 from transformers.utils import logging
 
 
 # from .modular_vibevoice_tokenizer import VibeVoiceTokenizerStreamingCache, VibeVoiceAcousticTokenizerModel, VibeVoiceSemanticTokenizerModel
 from .modular_vibevoice_tokenizer import VibeVoiceTokenizerStreamingCache, VibeVoiceTokenizerEncoderOutput
-from .modular_vibevoice_diffusion_head import VibeVoiceDiffusionHead
-from vibevoice.schedule.dpm_solver import DPMSolverMultistepScheduler
 
 from .configuration_vibevoice import VibeVoiceConfig
 
-from .modular_vibevoice_text_tokenizer import VibeVoiceTextTokenizer, VibeVoiceTextTokenizerFast
 
 from .modeling_vibevoice import VibeVoiceModel, VibeVoicePreTrainedModel
 from .streamer import AudioStreamer, AsyncAudioStreamer
@@ -363,8 +359,8 @@ class VibeVoiceForConditionalGenerationInference(VibeVoicePreTrainedModel, Gener
         """
         # 1. Handle `generation_config` and kwargs that might update it, and validate the `.generate()` call
         tokenizer = kwargs.pop("tokenizer", None)  # Pull this out first, we only use it for stopping criteria
-        parsed_scripts = kwargs.pop("parsed_scripts", None)
-        all_speakers_list = kwargs.pop("all_speakers_list", None)
+        kwargs.pop("parsed_scripts", None)
+        kwargs.pop("all_speakers_list", None)
         max_length_times = kwargs.pop("max_length_times", 2)
 
         if kwargs.get('max_new_tokens', None) is None:

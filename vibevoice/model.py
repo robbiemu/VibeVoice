@@ -1,5 +1,4 @@
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
 from vibevoice.utils.device_config import get_optimal_config
 from vibevoice.modular.modeling_vibevoice_inference import VibeVoiceForConditionalGenerationInference
 from vibevoice.processor.vibevoice_processor import VibeVoiceProcessor
@@ -36,7 +35,8 @@ def load_vibevoice_model(model_name, device="auto", torch_dtype=None, attn_imple
     print("="*50 + "\n")
 
     model_kwargs = {"torch_dtype": torch_dtype}
-    if attn_implementation:
+    # Only add the argument if it's a valid, known implementation
+    if attn_implementation in ("flash_attention_2", "sdpa"):
         model_kwargs["attn_implementation"] = attn_implementation
 
     model = VibeVoiceForConditionalGenerationInference.from_pretrained(

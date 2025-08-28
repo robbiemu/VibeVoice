@@ -1,5 +1,4 @@
 import math
-import warnings
 from typing import List, Optional, Union, Dict, Any, Tuple
 import os
 import re
@@ -58,7 +57,6 @@ class VibeVoiceProcessor:
         import json
         from .vibevoice_tokenizer_processor import VibeVoiceTokenizerProcessor
         from vibevoice.modular.modular_vibevoice_text_tokenizer import (
-            VibeVoiceTextTokenizer, 
             VibeVoiceTextTokenizerFast
         )
         

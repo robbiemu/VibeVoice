@@ -316,7 +316,7 @@ class VibeVoiceDemo:
                 if should_yield and pending_chunks:
                     # Concatenate and yield only the new audio chunks
                     new_audio = np.concatenate(pending_chunks)
-                    new_duration = len(new_audio) / sample_rate
+                    len(new_audio) / sample_rate
                     total_duration = (
                         sum(len(chunk) for chunk in all_audio_chunks) / sample_rate
                     )
@@ -476,7 +476,7 @@ class VibeVoiceDemo:
             def check_stop_generation():
                 return self.stop_generation
 
-            outputs = self.model.generate(
+            self.model.generate(
                 **inputs,
                 max_new_tokens=None,
                 cfg_scale=cfg_scale,
@@ -1011,7 +1011,6 @@ Or paste text directly and it will auto-assign speakers.""",
                 )
 
                 # The generator will yield multiple times
-                final_log = "Starting generation..."
 
                 for (
                     streaming_audio,
@@ -1027,7 +1026,6 @@ Or paste text directly and it will auto-assign speakers.""",
                     speaker_4=speakers[3],
                     cfg_scale=cfg_scale,
                 ):
-                    final_log = log
 
                     # Check if we have complete audio (final yield)
                     if complete_audio is not None:
@@ -1328,8 +1326,8 @@ def main():
     print(f"🚀 Launching demo on port {args.port}")
     print(f"📁 Model path: {args.model_path}")
     print(f"🎭 Available voices: {len(demo_instance.available_voices)}")
-    print(f"🔴 Streaming mode: ENABLED")
-    print(f"🔒 Session isolation: ENABLED")
+    print("🔴 Streaming mode: ENABLED")
+    print("🔒 Session isolation: ENABLED")
 
     # Launch the interface
     try:

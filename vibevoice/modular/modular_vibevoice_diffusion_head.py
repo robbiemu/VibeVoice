@@ -1,9 +1,7 @@
 import math
-from typing import Optional, Tuple, Union
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 from transformers.models.auto import AutoModel
 from transformers.modeling_utils import PreTrainedModel

@@ -103,7 +103,17 @@ def get_optimal_config() -> Dict[str, Any]:
     # CUDA path
     if torch.cuda.is_available():
         device = "cuda"
-        dtype = torch.bfloat16
+        # Check for Ampere or newer GPUs for bfloat16 support
+        if torch.cuda.get_device_properties(0).major >= 8:
+            dtype = torch.bfloat16
+        else:
+            dtype = torch.float16
+            warnings.warn(
+                "BF16 not supported on this CUDA device (Compute Capability < 8.0). "
+                "Falling back to float16.",
+                UserWarning,
+                stacklevel=2,
+            )
         attn_implementation = "flash_attention_2" if _flash_attn_available() else "sdpa"
         return {
             "device": device,

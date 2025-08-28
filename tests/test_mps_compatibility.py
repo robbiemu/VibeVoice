@@ -110,7 +110,7 @@ def test_mps_inference():
                     max_new_tokens=10,  # Generate just 10 new tokens for testing
                     do_sample=False,    # Deterministic generation for testing consistency
                 )
-        except Exception as e:
+        except Exception:
             # If generate fails, try a simple forward pass
             if is_lightweight_test:
                 output = model(
