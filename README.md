@@ -199,33 +199,44 @@ When running on Apple Silicon, keep these points in mind:
 
 ### Quick Start Commands
 
-Here are common usage patterns for Apple Silicon Macs:
+Here are common usage patterns:
 
 ```bash
-# Basic inference with automatic MPS detection
-python demo/inference_from_file.py \
+# Basic inference with automatic device detection
+python demo/inference.py \
   --model_path WestZhang/VibeVoice-Large-pt \
   --txt_path demo/text_examples/1p_abs.txt \
   --speaker_names Alice
 
-# Explicitly specify MPS device
-python demo/inference_from_file.py \
+# Multiple speakers
+python demo/inference.py \
+  --model_path WestZhang/VibeVoice-Large-pt \
+  --txt_path demo/text_examples/2p_music.txt \
+  --speaker_names Alice Yunfan
+
+# Explicitly specify device
+python demo/inference.py \
   --model_path WestZhang/VibeVoice-Large-pt \
   --txt_path demo/text_examples/2p_music.txt \
   --speaker_names Alice Yunfan \
   --device mps
 
 # Specify BFloat16 precision (automatically selected on MPS when supported)
-python demo/inference_from_file.py \
+python demo/inference.py \
   --model_path WestZhang/VibeVoice-Large-pt \
   --txt_path demo/text_examples/1p_abs.txt \
   --speaker_names Alice \
   --dtype bf16
 
-# Launch Gradio demo with MPS
+# Direct text input instead of file
+python demo/inference.py \
+  --model_path WestZhang/VibeVoice-Large-pt \
+  --txt "Speaker 1: Hello, how are you today? Speaker 2: I'm doing great, thanks for asking!" \
+  --speaker_names Alice Yunfan
+
+# Launch Gradio demo
 python demo/gradio_demo.py \
   --model_path WestZhang/VibeVoice-Large-pt \
-  --device mps \
   --share
 ```
 
@@ -245,11 +256,18 @@ VibeVoice includes utilities to help diagnose and benchmark your MPS setup:
 
 ### CLI Flags
 
-The demo scripts support these device-specific flags:
+The inference script supports these flags:
 
+- `--model_path`: Path to the HuggingFace model directory (default: "microsoft/VibeVoice-1.5b")
+- `--txt`: Direct text input for inference (instead of reading from a file)
+- `--txt_path`: Path to the txt file containing the script (required if --txt is not provided)
+- `--speaker_names`: Speaker names in order (e.g., --speaker_names Andrew Ava "Bill Gates")
+- `--output_dir`: Directory to save output audio files (default: "./outputs")
 - `--device`: Specify the computation device (`auto`, `cuda`, `mps`, `cpu`) - defaults to `auto`
 - `--dtype`: Specify the data type (`auto`, `bf16`, `fp16`, `fp32`) - defaults to `auto`
 - `--attn-impl`: Specify attention implementation (`auto`, `flash_attention_2`, `sdpa`) - defaults to `auto`
+- `--cfg_scale`: CFG (Classifier-Free Guidance) scale for generation (default: 1.3)
+- `--probe-only`: Print resolved device/dtype/attn configuration and exit without loading model
 
 Note: Flash Attention is only available on CUDA devices. On MPS, SDPA is automatically used.
 
@@ -272,15 +290,34 @@ python demo/gradio_demo.py --model_path microsoft/VibeVoice-1.5B --share
 python demo/gradio_demo.py --model_path WestZhang/VibeVoice-Large-pt --share
 ```
 
-### Usage 2: Inference from files directly
+### Usage 2: Inference from files or direct text input
+
+The script expects text input in a specific format where each speaker line starts with "Speaker X:" where X is a number:
+
+```
+Speaker 1: Hello, how are you today?
+Speaker 2: I'm doing great, thanks for asking!
+Speaker 1: That's wonderful to hear.
+```
+
+You can provide this text in two ways:
+
+1. Via a text file using `--txt_path`
+2. Directly as a string using `--txt`
+
 ```bash
 # We provide some LLM generated example scripts under demo/text_examples/ for demo
 # 1 speaker
-python demo/inference_from_file.py --model_path WestZhang/VibeVoice-Large-pt --txt_path demo/text_examples/1p_abs.txt --speaker_names Alice
+python demo/inference.py --model_path WestZhang/VibeVoice-Large-pt --txt_path demo/text_examples/1p_abs.txt --speaker_names Alice
 
 # or more speakers
-python demo/inference_from_file.py --model_path WestZhang/VibeVoice-Large-pt --txt_path demo/text_examples/2p_music.txt --speaker_names Alice Frank
+python demo/inference.py --model_path WestZhang/VibeVoice-Large-pt --txt_path demo/text_examples/2p_music.txt --speaker_names Alice Frank
+
+# Direct text input (instead of file)
+python demo/inference.py --model_path WestZhang/VibeVoice-Large-pt --txt "Speaker 1: Hello, how are you today? Speaker 2: I'm doing great, thanks for asking!" --speaker_names Alice Frank
 ```
+
+The `--speaker_names` parameter maps speaker numbers to actual names. For example, with `--speaker_names Alice Frank`, Speaker 1 will use Alice's voice and Speaker 2 will use Frank's voice.
 
 ## FAQ
 #### Q1: Is this a pretrained model?

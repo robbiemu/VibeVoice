@@ -158,10 +158,14 @@ def parse_args():
     )
 
     parser.add_argument(
+        "--txt",
+        type=str,
+        help="Direct text input for inference (instead of reading from a file)",
+    )
+    parser.add_argument(
         "--txt_path",
         type=str,
-        default="demo/text_examples/1p_abs.txt",
-        help="Path to the txt file containing the script",
+        help="Path to the txt file containing the script (required if --txt is not provided)",
     )
     parser.add_argument(
         "--speaker_names",
@@ -215,6 +219,15 @@ def parse_args():
 def main():
     args = parse_args()
 
+    # Validate input arguments
+    if args.txt and args.txt_path:
+        print("Error: Only one of --txt or --txt_path should be provided, not both")
+        return
+    elif not args.txt and not args.txt_path:
+        # Apply default txt_path if neither is provided
+        args.txt_path = "demo/text_examples/1p_abs.txt"
+        print(f"Using default text file: {args.txt_path}")
+
     # Handle probe-only mode
     if args.probe_only:
         # Use the centralized helper function to resolve configuration
@@ -234,15 +247,19 @@ def main():
     # Initialize voice mapper
     voice_mapper = VoiceMapper()
 
-    # Check if txt file exists
-    if not os.path.exists(args.txt_path):
+    # Check if txt file exists (only when txt_path is provided)
+    if args.txt_path and not os.path.exists(args.txt_path):
         print(f"Error: txt file not found: {args.txt_path}")
         return
 
-    # Read and parse txt file
-    print(f"Reading script from: {args.txt_path}")
-    with open(args.txt_path, "r", encoding="utf-8") as f:
-        txt_content = f.read()
+    # Read and parse txt content (either from file or direct input)
+    if args.txt:
+        txt_content = args.txt
+        print("Using direct text input")
+    else:
+        print(f"Reading script from: {args.txt_path}")
+        with open(args.txt_path, "r", encoding="utf-8") as f:
+            txt_content = f.read()
 
     # Parse the txt content to get speaker numbers
     scripts, speaker_numbers = parse_txt_script(txt_content)
@@ -266,7 +283,7 @@ def main():
     for i, name in enumerate(speaker_names_list, 1):
         speaker_name_mapping[str(i)] = name
 
-    print(f"\nSpeaker mapping:")
+    print("\nSpeaker mapping:")
     for speaker_num in set(speaker_numbers):
         mapped_name = speaker_name_mapping.get(speaker_num, f"Speaker {speaker_num}")
         print(f"  Speaker {speaker_num} -> {mapped_name}")
@@ -382,7 +399,11 @@ def main():
     print(f"Total tokens: {output_tokens}")
 
     # Save output
-    txt_filename = os.path.splitext(os.path.basename(args.txt_path))[0]
+    if args.txt:
+        txt_filename = "direct_input"
+    else:
+        txt_filename = os.path.splitext(os.path.basename(args.txt_path))[0]
+
     output_path = os.path.join(args.output_dir, f"{txt_filename}_generated.wav")
     os.makedirs(args.output_dir, exist_ok=True)
 
