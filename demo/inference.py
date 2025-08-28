@@ -6,6 +6,8 @@ import time
 import traceback
 from typing import List, Tuple
 
+from dotenv import load_dotenv
+
 # On macOS, set up MPS environment early to avoid potential issues
 if sys.platform == "darwin":
     from vibevoice.utils.device_config import setup_mps_environment_early
@@ -229,6 +231,7 @@ def parse_args():
 
 
 def main():
+    load_dotenv()
     args = parse_args()
 
     # Set seed if provided

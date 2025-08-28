@@ -14,8 +14,8 @@ def setup_mps_environment_early() -> None:
     Sets PYTORCH_ENABLE_MPS_FALLBACK=1 and PYTORCH_MPS_HIGH_WATERMARK_RATIO=0.0
     """
     if platform.system() == "Darwin":  # macOS
-        os.environ["PYTORCH_ENABLE_MPS_FALLBACK"] = "1"
-        os.environ["PYTORCH_MPS_HIGH_WATERMARK_RATIO"] = "0.0"
+        os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
+        os.environ.setdefault("PYTORCH_MPS_HIGH_WATERMARK_RATIO", "0.0")
 
 
 def _flash_attn_available() -> bool:

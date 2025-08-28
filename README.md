@@ -169,6 +169,30 @@ pip install -e ".[cuda]"
 uv sync --extra cuda
 ```
 
+## Environment Configuration
+
+This project uses a `.env` file for managing environment variables. This allows you to easily configure settings for different environments (CUDA, MPS, CPU) without changing the code.
+
+### Quick Setup
+
+1.  **Copy the example file:**
+    ```bash
+    cp .env.example .env
+    ```
+
+2.  **Edit the `.env` file:** Open the newly created `.env` file and uncomment or change the variables according to your setup.
+
+### Key Environment Variables
+
+-   `TOKENIZERS_PARALLELISM=false`: Recommended to avoid potential deadlocks.
+-   `CUDA_VISIBLE_DEVICES`: Specify which NVIDIA GPU(s) to use.
+-   `PYTORCH_ENABLE_MPS_FALLBACK=1`: Essential for running on Apple Silicon (macOS).
+-   `OMP_NUM_THREADS`: Limit the number of CPU threads used.
+-   `HF_HOME`: Set a custom directory to store downloaded Hugging Face models.
+-   `GRADIO_SERVER_NAME`/`GRADIO_SERVER_PORT`: Configure the network interface and port for the Gradio demo.
+
+**Note:** The `.env` file is ignored by Git and should not be committed to version control.
+
 ## Apple Silicon (MPS) Support
 
 VibeVoice has full support for Apple Silicon Macs using the Metal Performance Shaders (MPS) backend. Here's what you need to know:

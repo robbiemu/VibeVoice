@@ -8,6 +8,7 @@ import sys
 import time
 from typing import Iterator
 import threading
+from dotenv import load_dotenv
 import numpy as np
 import gradio as gr
 import librosa
@@ -1026,7 +1027,6 @@ Or paste text directly and it will auto-assign speakers.""",
                     speaker_4=speakers[3],
                     cfg_scale=cfg_scale,
                 ):
-
                     # Check if we have complete audio (final yield)
                     if complete_audio is not None:
                         # Final state: clear streaming, show complete audio
@@ -1097,12 +1097,12 @@ Or paste text directly and it will auto-assign speakers.""",
             fn=clear_audio_outputs,
             inputs=[],
             outputs=[audio_output, complete_audio_output],
-            queue=False
+            queue=False,
         ).then(  # Immediate UI update to hide Generate, show Stop (non-queued)
             fn=lambda: (gr.update(visible=False), gr.update(visible=True)),
             inputs=[],
             outputs=[generate_btn, stop_btn],
-            queue=False
+            queue=False,
         ).then(
             fn=generate_podcast_wrapper,
             inputs=[num_speakers, script_input] + speaker_selections + [cfg_scale],
@@ -1292,6 +1292,7 @@ def parse_args():
 
 def main():
     """Main function to run the demo."""
+    load_dotenv()
     args = parse_args()
 
     set_seed(42)  # Set a fixed seed for reproducibility
@@ -1335,6 +1336,12 @@ def main():
     print("🔴 Streaming mode: ENABLED")
     print("🔒 Session isolation: ENABLED")
 
+    # Prioritize environment variables for server config, then args
+    server_name = os.getenv(
+        "GRADIO_SERVER_NAME", "0.0.0.0" if args.share else "127.0.0.1"
+    )
+    server_port = int(os.getenv("GRADIO_SERVER_PORT", args.port))
+
     # Launch the interface
     try:
         interface.queue(
@@ -1342,8 +1349,8 @@ def main():
             default_concurrency_limit=1,  # Process one request at a time
         ).launch(
             share=args.share,
-            # server_port=args.port,
-            server_name="0.0.0.0" if args.share else "127.0.0.1",
+            server_name=server_name,
+            server_port=server_port,
             show_error=True,
             show_api=False,  # Hide API docs for cleaner interface
         )
