@@ -212,6 +212,11 @@ def parse_args():
         action="store_true",
         help="Print resolved device/dtype/attn configuration and exit without loading model",
     )
+    parser.add_argument(
+        "--no-compile",
+        action="store_true",
+        help="Disable torch.compile() and run in eager mode.",
+    )
 
     return parser.parse_args()
 
@@ -334,6 +339,7 @@ def main():
             device=device,
             torch_dtype=torch_dtype,
             attn_implementation=attn_impl,
+            use_compile=(not args.no_compile),
         )
     except Exception as e:
         print(f"[ERROR] Failed to load the model: {type(e).__name__}: {e}")

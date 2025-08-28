@@ -1281,6 +1281,11 @@ def parse_args():
         default=7860,
         help="Port to run the demo on",
     )
+    parser.add_argument(
+        "--no-compile",
+        action="store_true",
+        help="Disable torch.compile() and run in eager mode.",
+    )
 
     return parser.parse_args()
 
@@ -1311,6 +1316,7 @@ def main():
         device=device,
         torch_dtype=torch_dtype,
         attn_implementation=attn_impl,
+        use_compile=(not args.no_compile),
     )
 
     print("🎙️ Initializing VibeVoice Demo with Streaming Support...")
