@@ -268,8 +268,13 @@ The inference script supports these flags:
 - `--attn-impl`: Specify attention implementation (`auto`, `flash_attention_2`, `sdpa`) - defaults to `auto`
 - `--cfg_scale`: CFG (Classifier-Free Guidance) scale for generation (default: 1.3)
 - `--probe-only`: Print resolved device/dtype/attn configuration and exit without loading model
+- `--no-compile`: Disable torch.compile() and run in eager mode. By default, the model runs in compiled mode for significantly faster inference on supported hardware (CUDA and MPS). The first run will have a one-time compilation overhead.
 
 Note: Flash Attention is only available on CUDA devices. On MPS, SDPA is automatically used.
+
+### Performance Optimization
+
+VibeVoice runs in compiled mode by default for significantly faster inference on supported hardware (CUDA and MPS). The first run will have a one-time compilation overhead, but subsequent runs will be much faster. If you encounter any issues with the compiled mode, you can use the `--no-compile` flag to run in eager mode.
 
 ## Usages
 
