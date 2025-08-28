@@ -15,6 +15,7 @@ if sys.platform == "darwin":
 from vibevoice.model import load_vibevoice_model
 from vibevoice.utils.device_config import resolve_config_from_args
 from transformers.utils import logging
+from transformers import set_seed
 
 logging.set_verbosity_info()
 logger = logging.get_logger(__name__)
@@ -208,6 +209,12 @@ def parse_args():
         help="CFG (Classifier-Free Guidance) scale for generation (default: 1.3)",
     )
     parser.add_argument(
+        "--seed",
+        type=int,
+        default=None,
+        help="Random seed for generation (default: None, no seed set)",
+    )
+    parser.add_argument(
         "--probe-only",
         action="store_true",
         help="Print resolved device/dtype/attn configuration and exit without loading model",
@@ -223,6 +230,11 @@ def parse_args():
 
 def main():
     args = parse_args()
+
+    # Set seed if provided
+    if args.seed is not None:
+        set_seed(args.seed)
+        print(f"Random seed set to: {args.seed}")
 
     # Validate input arguments
     if args.txt and args.txt_path:
