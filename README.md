@@ -6,6 +6,7 @@
 [![Technical Report](https://img.shields.io/badge/Technical-Report-red?logo=adobeacrobatreader)](https://arxiv.org/pdf/2508.19205)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/microsoft/VibeVoice/blob/main/demo/VibeVoice_colab.ipynb)
 [![Live Playground](https://img.shields.io/badge/Live-Playground-green?logo=gradio)](https://aka.ms/VibeVoice-Demo)
+[![Colab](https://img.shields.io/badge/Run-Colab-orange?logo=googlecolab)](https://colab.research.google.com/github/microsoft/VibeVoice/blob/main/demo/VibeVoice_colab.ipynb)
 
 </div>
 <!-- <div align="center">
@@ -13,7 +14,10 @@
 </div> -->
 
 <div align="center">
-<img src="Figures/VibeVoice_logo.png" alt="VibeVoice Logo" width="300">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="Figures/VibeVoice_logo_white.png">
+  <img src="Figures/VibeVoice_logo.png" alt="VibeVoice Logo" width="300">
+</picture>
 </div>
 
 VibeVoice is a novel framework designed for generating **expressive**, **long-form**, **multi-speaker** conversational audio, such as podcasts, from text. It addresses significant challenges in traditional Text-to-Speech (TTS) systems, particularly in scalability, speaker consistency, and natural turn-taking.
@@ -31,11 +35,13 @@ The model can synthesize speech up to **90 minutes** long with up to **4 distinc
 ### 🔥 News
 
 - **[2025-08-26] 🎉 We Open Source the [VibeVoice-7B-Preview](https://huggingface.co/WestZhang/VibeVoice-Large-pt) model weights!**
+- **[2025-08-28] 🎉 We provide a [Colab](https://colab.research.google.com/github/microsoft/VibeVoice/blob/main/demo/VibeVoice_colab.ipynb) script for easy access to our model. Due to GPU memory limitations, only VibeVoice-1.5B is supported.**
 
 ### 📋 TODO
 
 - [ ] Merge models into official Hugging Face repository
 - [ ] Release example training code and documentation
+- [ ] VibePod:  End-to-end solution that creates podcasts from documents, webpages, or even a simple topic.
 
 ### 🎵 Demo Examples
 
@@ -307,6 +313,9 @@ We observed users may encounter occasional instability when synthesizing Chinese
 
 - Using English punctuation even for Chinese text, preferably only commas and periods.
 - Using the 7B model variant, which is considerably more stable.
+- If you found the generated voice speak too fast. Please try to chunk your text with multiple speaker turns with same speaker label.
+
+We'd like to thank [PsiPi](https://huggingface.co/PsiPi) for sharing an interesting way for emotion control. Detials can be found via [discussion12](https://huggingface.co/microsoft/VibeVoice-1.5B/discussions/12).
 
 ### Usage 1: Launch Gradio demo
 ```bash
